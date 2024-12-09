@@ -46,14 +46,17 @@ on:
 
 jobs:
   pre-commit:
+    permissions:
+      # Ensure that this workflow part has permission to write to the PR branch.
+      # It might not be able to skip CI checks in all cases, but at least it can write!
+      contents: write
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event.inputs.pre_commit == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           # PAT of user who has permission to bypass branch
-          # protection || or standard GITHUB_TOKEN if running on an external fork (won't
-          # be able to commit fixes):
+          # protection || or standard GITHUB_TOKEN if running on an external fork:
           token: ${{ secrets.HPCFLOW_ACTIONS_TOKEN || secrets.GITHUB_TOKEN }}
           # checkout PR source branch (head_ref) if event is pull_request:
           ref: ${{ github.head_ref || github.ref }}
